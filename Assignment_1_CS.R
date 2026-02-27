@@ -36,14 +36,33 @@ summary(AvengersDataClean$CombatEffectiveness)
 #used the 'summary' function to confirm that the new variable was created and properly summed the data of the four 
 #variables of interest. 
 
+AvengersData %>%
+  #summarise(N = n())
+
+AvengersDataClean %>%
+  summarise(N = n())
+#Here I also ran some additional code to get some descriptives to include in my report. 
+
 #Question 3 
 
 AvengersSubset <- AvengersDataClean %>%
   filter(superpower == "no",
          died =="yes")
 
+AvengersSubset %>%
+  summarise(N = n())
+
 #For the first part of question three I have created a new object/data set 'AvengersSubset' and used the pipe function to 
 #include only data for those who have died that did not have a superpower. 
+
+AvengersSubset %>%
+  summarise(N = n())
+
+AvengersSubset %>%
+  count(north_south) %>%
+  mutate(percent = n / sum(n) * 100)
+
+#Once again, please ignore this code, I am just using it to get some descriptives of the subsample we are looking at here. 
 
 write.csv(AvengersSubset,
           "AvengersSubset.csv",
@@ -76,8 +95,10 @@ AvengersSubset %>%
              Mean = mean,
              SD = sd,
              Min = min,
-             Max = max
+             Max = max,
+             Range = ~ max(.x, na.rm = TRUE) - min(.x, na.rm = TRUE)
            )))
+
 SummaryLocation <- AvengersSubset %>%
   group_by(north_south) %>%
   summarise(
@@ -86,7 +107,8 @@ SummaryLocation <- AvengersSubset %>%
              Mean = mean,
              SD = sd,
              Min = min,
-             Max = max
+             Max = max,
+             Range = ~ max(.x, na.rm = TRUE) - min(.x, na.rm = TRUE)
            )))
 
 view(SummaryLocation)
@@ -145,8 +167,8 @@ abs(TotalMean - MeanRemovedInjuries) #81.83005
 #Now I am using the absolute value function to compare the mean difference when each variable is individually
 #removed. 
 
-# Question 6
-# See report. 
+#Question 6
+#See report. 
 
 #Question 7
 #See report. 
@@ -165,3 +187,34 @@ pwr.t.test(
 
 # Here you can see the power analysis that was used to compare group differences between IQ scores in Avengers with 
 #and without superpowers. For justification of parameter selection please see question 8 in the report. 
+
+#Question 9
+#See report. 
+
+#Question 10
+
+AvengersDataClean %>%
+  count(superpower)
+
+#Here I am confirming that the whole collected sample has enough participants (or Avengers) in each group (with out
+#superpowers) to pass the power analysis.
+
+install.packages("effectsize")
+library(effectsize)
+
+#Here I am just installing the packages needed for this analysis. 
+
+library(metafor)
+
+IQ_Superpower <- escalc(
+  measure = "SMD",
+  ti = 4.25,      
+  n1i = 32,      
+  n2i = 780,      
+  var.names = c("dp","variance")
+)
+
+summary(IQ_Superpower)
+
+
+
